@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Page</title>
+    <style>
+        header {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        nav ul li {
+            display: inline;
+            margin-right: 10px;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+        }
+
+        /* Main */
+        main {
+            padding: 20px;
+        }
+
+        /* List of Users */
+        h2 {
+            margin-top: 20px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        img {
+            max-width: 100px;
+            max-height: 100px;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Main Page</h1>
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/orders">Order</a></li>
+            {% if 'user_id' in session %}
+            <li><a href="/logout">Logout</a></li>
+            <li><a href="/profile">Edit Profile</a></li>
+            {% else %}
+            <li><a href="/login">Login</a></li>
+            <li><a href="/register">Register</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+</header>
+
+<main>
+    {% if displayed_orders %}
+    <h2>Displayed Orders</h2>
+    <ul>
+        {% for order in displayed_orders %}
+        <li>{{ order.message }}</li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>No orders to display. Please log in to view orders.</p>
+    {% endif %}
+
+    {% if 'user_id' in session %}
+    <h2>List of Users</h2>
+    <ul>
+        {% for user in users %}
+        <li>{{ user.username }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+</main>
+</body>
+</html>

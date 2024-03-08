@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orders</title>
+    <style>
+        /* styles.css for Orders page */
+
+        /* Header */
+        header {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        nav ul li {
+            display: inline;
+            margin-right: 10px;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+        }
+
+        /* Main */
+        main {
+            padding: 20px;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        h3 {
+            margin-bottom: 10px;
+        }
+
+        form {
+            max-width: 400px;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        textarea {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        input[type="checkbox"] {
+            margin-bottom: 10px;
+        }
+
+        button[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        a {
+            color: #1E90FF;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+    </style>
+</head>
+<body>
+<header>
+    <h1>Orders</h1>
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            {% if user %}
+            <li><a href="/logout">Logout</a></li>
+            {% else %}
+            <li><a href="/login">Login</a></li>
+            <li><a href="/register">Register</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+</header>
+
+<main>
+    {% if user %}
+    <h2>Welcome, {{ user.username }}</h2>
+    <h3>Create Order</h3>
+    <form action="/orders" method="post">
+        <label for="message">Message:</label>
+        <textarea id="message" name="message" rows="4" required></textarea>
+        <label for="display">Display to other users:</label>
+        <input type="checkbox" id="display" name="display">
+        <br>
+        <button type="submit">Submit Order</button>
+    </form>
+    <h3>My Orders</h3>
+    <ul>
+        {% for order in orders %}
+        <li>{{ order.message }}{% if order.display %} (Visible to other users){% endif %} -
+            <form action="/cancel_order/{{ order.id }}" method="post">
+                <button type="submit">Cancel</button>
+            </form>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>Please log in to create or view your orders.</p>
+    <a href="/login">Login</a> | <a href="/register">Register</a>
+    {% endif %}
+</main>
+</body>
+</html>

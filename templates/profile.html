@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+    <style>
+        /* styles.css for Profile page */
+
+        /* Header */
+        header {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        nav ul li {
+            display: inline;
+            margin-right: 10px;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+        }
+
+        /* Main */
+        main {
+            padding: 20px;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        form {
+            max-width: 300px;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        input[type="file"] {
+            margin-bottom: 10px;
+        }
+
+        button[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        img {
+            max-width: 200px;
+            max-height: 200px;
+            margin-top: 20px;
+        }
+
+    </style>
+</head>
+<body>
+<header>
+    <h1>Profile</h1>
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/logout">Logout</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main>
+    <h2>Welcome, {{ user.username }}</h2>
+    <form action="/profile" method="post" enctype="multipart/form-data">
+        <label for="profile_image">Profile Image:</label>
+        <input type="file" id="profile_image" name="profile_image">
+        <button type="submit">Update Profile</button>
+    </form>
+    {% if user.profile_image %}
+    <img src="{{ url_for('static', filename=user.profile_image) }}" alt="Profile Image">
+    {% endif %}
+</main>
+</body>
+</html>
