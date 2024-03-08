@@ -85,13 +85,19 @@
 </header>
 
 <main>
-    <form action="/register" method="post">
+    <form method="POST" action="/register">
         <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required>
+        <input type="text" id="username" name="username"><br>
+
         <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required>
-        <button type="submit">Register</button>
+        <input type="password" id="password" name="password"><br>
+
+        <label for="confirm_password">Confirm Password:</label>
+        <input type="password" id="confirm_password" name="confirm_password"><br>
+
+        <input type="submit" value="Register">
     </form>
+
 </main>
 </body>
 </html>

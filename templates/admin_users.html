@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete User</title>
+</head>
+<body>
+<h1>Delete User</h1>
+<form action="/admin/delete_user" method="post">
+    <p>Select a user to delete:</p>
+    <select name="user_id">
+        {% for user in users %}
+        {% if not user.is_admin %}
+        <option value="{{ user.id }}">{{ user.username }}</option>
+        {% endif %}
+        {% endfor %}
+    </select>
+    <button type="submit">Delete User</button>
+</form>
+<a href="/">Cancel</a>
+</body>
+</html>

@@ -98,6 +98,15 @@
     {% if user.profile_image %}
     <img src="{{ url_for('static', filename=user.profile_image) }}" alt="Profile Image">
     {% endif %}
+    <form action="/profile/update_password" method="post">
+        <label for="current_password">Current Password:</label>
+        <input type="password" id="current_password" name="current_password">
+        <label for="new_password">New Password:</label>
+        <input type="password" id="new_password" name="new_password">
+        <label for="confirm_new_password">Confirm New Password:</label>
+        <input type="password" id="confirm_new_password" name="confirm_new_password">
+        <button type="submit">Change Password</button>
+    </form>
 </main>
 </body>
 </html>

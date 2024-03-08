@@ -1,5 +1,7 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, session
+from flask import request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.sql.functions import current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 
@@ -16,7 +18,13 @@ class User(db.Model):
     username = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(100), nullable=False)
     profile_image = db.Column(db.String(100))  # File path or external link to profile image
-    # Add more fields as needed
+    is_admin = db.Column(db.Boolean, default=False)  # Indicates if the user is an administrator
+
+    def set_password(self, password):
+        self.password = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password, password)
 
 
 class Order(db.Model):
@@ -63,18 +71,27 @@ def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        # Check if the username is already taken
+        confirm_password = request.form['confirm_password']
+        if password != confirm_password:
+            flash('Passwords do not match. Please try again.', 'danger')
+            return redirect(url_for('register'))
+
         existing_user = User.query.filter_by(username=username).first()
         if existing_user:
             flash('Username already exists. Please choose a different one.', 'danger')
             return redirect(url_for('register'))
-        # Create a new user
-        hashed_password = generate_password_hash(password)
-        new_user = User(username=username, password=hashed_password)
-        db.session.add(new_user)
-        db.session.commit()
-        flash('You have been registered successfully! Please log in.', 'success')
-        return redirect(url_for('login'))
+
+        try:
+            hashed_password = generate_password_hash(password)
+            new_user = User(username=username, password=hashed_password)
+            db.session.add(new_user)
+            db.session.commit()
+            flash('You have been registered successfully! Please log in.', 'success')
+            return redirect(url_for('login'))
+        except Exception as e:
+            flash(f'An error occurred: {str(e)}', 'danger')
+            db.session.rollback()
+
     return render_template('register.html')
 
 
@@ -150,7 +167,86 @@ def cancel_order(order_id):
     return redirect(url_for('orders'))
 
 
+@app.route('/profile/update_password', methods=['POST'])
+def update_password():
+    if 'user_id' not in session:
+        flash('You need to log in to access this page.', 'danger')
+        return redirect(url_for('login'))
+
+    user = User.query.get(session['user_id'])
+
+    if request.method == 'POST':
+        current_password = request.form['current_password']
+        new_password = request.form['new_password']
+        confirm_new_password = request.form['confirm_new_password']
+
+        # Check if the new password and confirmation match
+        if new_password != confirm_new_password:
+            flash('New password and confirmation do not match.', 'danger')
+            return redirect(url_for('profile'))
+
+        # Check if the provided current password is correct
+        if not user.check_password(current_password):
+            flash('Incorrect current password.', 'danger')
+            return redirect(url_for('profile'))
+
+        # Update the current user's password
+        user.set_password(new_password)
+        db.session.commit()
+
+        flash('Password updated successfully!', 'success')
+        return redirect(url_for('profile'))
+
+    # Handle GET requests to this route (e.g., if someone manually navigates to it)
+    return redirect(url_for('profile'))
+
+
+@app.route('/admin/users')
+def admin_users():
+    if 'user_id' not in session:
+        flash('You need to log in to access this page.', 'danger')
+        return redirect(url_for('login'))
+
+    user = User.query.get(session['user_id'])
+
+    if not user.is_admin:
+        flash('You are not authorized to access this page.', 'danger')
+        return redirect(url_for('index'))
+
+    users = User.query.all()
+    return render_template('admin_users.html', users=users)
+
+
+@app.route('/admin/delete_user', methods=['POST'])
+def admin_delete_user():
+    if 'user_id' not in session:
+        flash('You need to log in to access this page.', 'danger')
+        return redirect(url_for('login'))
+
+    user = User.query.get(session['user_id'])
+
+    if not user.is_admin:
+        flash('You are not authorized to access this page.', 'danger')
+        return redirect(url_for('index'))
+
+    user_id = request.form.get('user_id')  # Retrieve the user ID from the form data
+    user_to_delete = User.query.get(user_id)
+    if user_to_delete:
+        db.session.delete(user_to_delete)
+        db.session.commit()
+        flash('User deleted successfully!', 'success')
+    else:
+        flash('User not found.', 'danger')
+    return redirect(url_for('admin_users'))
+
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
+        # Add an initial admin user if it doesn't exist
+        if not User.query.filter_by(username='admin').first():
+            admin_password = generate_password_hash('admin_password')
+            admin_user = User(username='admin', password=admin_password, is_admin=True)
+            db.session.add(admin_user)
+            db.session.commit()
         app.run(debug=True)
