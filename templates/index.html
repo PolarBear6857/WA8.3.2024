@@ -65,10 +65,11 @@
     <nav>
         <ul>
             <li><a href="/">Home</a></li>
-            <li><a href="/orders">Order</a></li>
             {% if 'user_id' in session %}
+            <li><a href="/orders">Order</a></li>
             <li><a href="/logout">Logout</a></li>
             <li><a href="/admin/users">Manage Users</a></li>
+            <li><a href="/profile">Profile</a></li>
             {% else %}
             <li><a href="/login">Login</a></li>
             <li><a href="/register">Register</a></li>
@@ -85,8 +86,6 @@
         <li>{{ order.message }}</li>
         {% endfor %}
     </ul>
-    {% else %}
-    <p>No orders to display. Please log in to view orders.</p>
     {% endif %}
 
     {% if 'user_id' in session %}
