@@ -163,7 +163,7 @@ def cancel_order(order_id):
     return redirect(url_for('orders'))
 
 
-# Aktualizace hesla
+# Změna hesla
 @app.route('/profile/update_password', methods=['POST'])
 def update_password():
     if 'user_id' not in session:
@@ -235,6 +235,7 @@ def admin_delete_user():
     return redirect(url_for('admin_users'))
 
 
+# Main
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
