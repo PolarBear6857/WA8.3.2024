@@ -99,6 +99,9 @@
     <img src="{{ url_for('static', filename=user.profile_image) }}" alt="Profile Image">
     {% endif %}
     <form action="/profile/update_password" method="post">
+        <!-- Include CSRF token here -->
+        {{ form.csrf_token }}
+
         <label for="current_password">Current Password:</label>
         <input type="password" id="current_password" name="current_password">
         <label for="new_password">New Password:</label>
