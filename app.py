@@ -44,7 +44,7 @@ def index():
 
     if 'user_id' in session:
         users = User.query.all()
-        displayed_orders = Order.query.filter_by(display=True).all()
+        displayed_orders = Order.query.all()  # Změna: zobrazí všechny objednávky pro administrátora
 
     return render_template('index.html', users=users, displayed_orders=displayed_orders)
 
